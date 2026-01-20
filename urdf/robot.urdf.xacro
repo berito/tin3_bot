@@ -3,54 +3,40 @@
 
   <!-- Include materials -->
   <xacro:include filename="$(find tin3_bot)/urdf/materials.xacro"/>
-
+   <xacro:include filename="$(find tin3_bot)/urdf/gazebo.xacro"/>
+   <xacro:include filename="$(find tin3_bot)/urdf/gazebo_control.xacro"/>
   <!-- ==================== -->
   <!-- PROPERTIES (meters)  -->
   <!-- ==================== -->
   
-  <!-- Mesh scale: 1 1 1 (meshes already in correct units) -->
+ 
+  
+  <!-- Mesh scale: 0.001 to convert mm to meters -->
   <xacro:property name="mesh_scale" value="1 1 1"/>
 
-  <!-- Chassis dimensions (from BoundBox, in meters) -->
+  <!-- Chassis dimensions (meters) -->
   <xacro:property name="chassis_length" value="0.837"/>
   <xacro:property name="chassis_width" value="1.314"/>
   <xacro:property name="chassis_height" value="0.606"/>
   <xacro:property name="chassis_mass" value="20.0"/>
 
-  <!-- Track dimensions (from BoundBox, in meters) -->
-  <xacro:property name="track_thickness" value="0.150"/>
-  <xacro:property name="track_length" value="1.214"/>
-  <xacro:property name="track_height" value="0.334"/>
-  
-  <!-- 
-    TRACK OFFSETS - Adjust these independently for left and right tracks
-    Positive X = left side of robot
-    Negative X = right side of robot
-  -->
-  <xacro:property name="left_track_x_offset" value="0.5"/>
-  <xacro:property name="right_track_x_offset" value="-0.19"/>
-  
-  <!-- Track Y offset (front/back adjustment if needed) -->
-  <xacro:property name="left_track_y_offset" value="-0.1"/>
-  <xacro:property name="right_track_y_offset" value="-0.1"/>
-  
-  <!-- Track Z offset (vertical position) -->
-  <xacro:property name="left_track_z_offset" value="0.06"/>
-  <xacro:property name="right_track_z_offset" value="0.06"/>
+  <!-- Track offsets from base_link center (meters) -->
+  <xacro:property name="track_y_offset" value="0.35"/>
+  <xacro:property name="track_z_offset" value="-0.22"/>
 
   <!-- Hidden wheel parameters -->
   <xacro:property name="wheel_radius" value="0.12"/>
   <xacro:property name="wheel_width" value="0.10"/>
   <xacro:property name="wheel_mass" value="1.0"/>
   
-  <!-- Wheel positions along track (Y direction = front/back) -->
-  <xacro:property name="wheel_front_y" value="0.40"/>
-  <xacro:property name="wheel_mid_y" value="0.0"/>
-  <xacro:property name="wheel_rear_y" value="-0.40"/>
+  <!-- Wheel positions along track (X direction = front/back) -->
+  <xacro:property name="wheel_front_x" value="0.40"/>
+  <xacro:property name="wheel_mid_x" value="0.0"/>
+  <xacro:property name="wheel_rear_x" value="-0.40"/>
   
   <!-- Wheel Z position (below base_link origin) -->
-  <xacro:property name="wheel_z" value="-0.15"/>
-
+  <!-- <xacro:property name="wheel_z" value="-0.15"/> -->
+<xacro:property name="wheel_z" value="-0.27"/>
   <!-- ==================== -->
   <!-- MACROS               -->
   <!-- ==================== -->
@@ -69,42 +55,42 @@
              izz="${m*r*r/2}"/>
   </xacro:macro>
 
+  <!-- Macro for hidden wheel -->
+  <xacro:macro name="hidden_wheel" params="name x_pos y_pos z_pos">
+    <link name="${name}">
+      <collision>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${wheel_mass}"/>
+        <xacro:cylinder_inertia m="${wheel_mass}" r="${wheel_radius}" l="${wheel_width}"/>
+      </inertial>
+    </link>
 
-<!-- Macro for hidden wheel -->
-<xacro:macro name="hidden_wheel" params="name x_pos y_pos z_pos">
-  <link name="${name}">
-    <collision>
-      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
-      <geometry>
-        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
-      </geometry>
-    </collision>
-    <inertial>
-      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
-      <mass value="${wheel_mass}"/>
-      <xacro:cylinder_inertia m="${wheel_mass}" r="${wheel_radius}" l="${wheel_width}"/>
-    </inertial>
-  </link>
+    <joint name="${name}_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${name}"/>
+      <origin xyz="${x_pos} ${y_pos} ${z_pos}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+  </xacro:macro>
 
-  <joint name="${name}_joint" type="continuous">
-    <parent link="base_link"/>
-    <child link="${name}"/>
-    <origin xyz="${x_pos} ${y_pos} ${z_pos}" rpy="0 0 ${-pi/2}"/>
-    <axis xyz="0 1 0"/>
+  <!-- ==================== -->
+  <!-- BASE FOOTPRINT       -->
+  <!-- ==================== -->
+
+  <link name="base_footprint"/>
+
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <!-- <origin xyz="0 0 0.27" rpy="0 0 0"/> -->
+       <origin xyz="0 0 0.387" rpy="0 0 0"/>
   </joint>
-</xacro:macro>
-
-<!-- ==================== -->
-<!-- BASE FOOTPRINT       -->
-<!-- ==================== -->
-
-<link name="base_footprint"/>
-
-<joint name="base_footprint_joint" type="fixed">
-  <parent link="base_footprint"/>
-  <child link="base_link"/>
-  <origin xyz="0 0 0.27" rpy="0 0 0"/>
-</joint>
 
   <!-- ==================== -->
   <!-- BASE LINK (CHASSIS)  -->
@@ -112,21 +98,21 @@
 
   <link name="base_link">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 ${pi/2}"/>
       <geometry>
         <mesh filename="package://tin3_bot/meshes/chassis.dae" scale="${mesh_scale}"/>
       </geometry>
       <material name="dark_gray"/>
     </visual>
-    <collision>
+    <!-- <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
       </geometry>
-      <origin xyz="0 0 ${chassis_height/2}" rpy="0 0 0"/>
-    </collision>
+    </collision> -->
     <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <mass value="${chassis_mass}"/>
-      <origin xyz="0 0 ${chassis_height/2}" rpy="0 0 0"/>
       <xacro:box_inertia m="${chassis_mass}" x="${chassis_length}" y="${chassis_width}" z="${chassis_height}"/>
     </inertial>
   </link>
@@ -138,7 +124,7 @@
   <!-- Left Track Visual -->
   <link name="left_track_visual">
     <visual>
-        <origin xyz="0 0 0" rpy="0 0 ${pi/2}"/>
+      <origin xyz="0 0 0" rpy="0 0 ${-pi/2}"/>
       <geometry>
         <mesh filename="package://tin3_bot/meshes/left_track.dae" scale="${mesh_scale}"/>
       </geometry>
@@ -153,13 +139,13 @@
   <joint name="left_track_visual_joint" type="fixed">
     <parent link="base_link"/>
     <child link="left_track_visual"/>
-    <origin xyz="${left_track_x_offset} ${left_track_y_offset} ${left_track_z_offset}" rpy="0 0 ${-pi/2}"/>
+    <origin xyz="0 ${track_y_offset} ${track_z_offset}" rpy="0 0 0"/>
   </joint>
 
   <!-- Right Track Visual -->
   <link name="right_track_visual">
     <visual>
-        <origin xyz="0 0 0" rpy="0 0 ${pi/2}"/>
+      <origin xyz="0 0 0" rpy="0 0 ${-pi/2}"/>
       <geometry>
         <mesh filename="package://tin3_bot/meshes/right_track.dae" scale="${mesh_scale}"/>
       </geometry>
@@ -174,7 +160,7 @@
   <joint name="right_track_visual_joint" type="fixed">
     <parent link="base_link"/>
     <child link="right_track_visual"/>
-    <origin xyz="${right_track_x_offset} ${right_track_y_offset} ${right_track_z_offset}" rpy="0 0 ${-pi/2}"/>
+    <origin xyz="0 ${-track_y_offset} ${track_z_offset}" rpy="0 0 0"/>
   </joint>
 
   <!-- ==================== -->
@@ -183,34 +169,34 @@
 
   <!-- Left side wheels (3 wheels) -->
   <xacro:hidden_wheel name="left_front_wheel" 
-                       x_pos="${left_track_x_offset}" 
-                       y_pos="${wheel_front_y}" 
+                       x_pos="${wheel_front_x}" 
+                       y_pos="${track_y_offset}" 
                        z_pos="${wheel_z}"/>
   
   <xacro:hidden_wheel name="left_mid_wheel" 
-                       x_pos="${left_track_x_offset}" 
-                       y_pos="${wheel_mid_y}" 
+                       x_pos="${wheel_mid_x}" 
+                       y_pos="${track_y_offset}" 
                        z_pos="${wheel_z}"/>
   
   <xacro:hidden_wheel name="left_rear_wheel" 
-                       x_pos="${left_track_x_offset}" 
-                       y_pos="${wheel_rear_y}" 
+                       x_pos="${wheel_rear_x}" 
+                       y_pos="${track_y_offset}" 
                        z_pos="${wheel_z}"/>
 
   <!-- Right side wheels (3 wheels) -->
   <xacro:hidden_wheel name="right_front_wheel" 
-                       x_pos="${right_track_x_offset}" 
-                       y_pos="${wheel_front_y}" 
+                       x_pos="${wheel_front_x}" 
+                       y_pos="${-track_y_offset}" 
                        z_pos="${wheel_z}"/>
   
   <xacro:hidden_wheel name="right_mid_wheel" 
-                       x_pos="${right_track_x_offset}" 
-                       y_pos="${wheel_mid_y}" 
+                       x_pos="${wheel_mid_x}" 
+                       y_pos="${-track_y_offset}" 
                        z_pos="${wheel_z}"/>
   
   <xacro:hidden_wheel name="right_rear_wheel" 
-                       x_pos="${right_track_x_offset}" 
-                       y_pos="${wheel_rear_y}" 
+                       x_pos="${wheel_rear_x}" 
+                       y_pos="${-track_y_offset}" 
                        z_pos="${wheel_z}"/>
 
 </robot>
