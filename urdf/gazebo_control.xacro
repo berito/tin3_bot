@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- ==================== -->
+    <!-- DIFFERENTIAL DRIVE   -->
+    <!-- ==================== -->
+
+    <gazebo>
+        <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+            <!-- Left side wheels -->
+            <left_joint>left_front_wheel_joint</left_joint>
+            <left_joint>left_mid_wheel_joint</left_joint>
+            <left_joint>left_rear_wheel_joint</left_joint>
+
+            <!-- Right side wheels -->
+            <right_joint>right_front_wheel_joint</right_joint>
+            <right_joint>right_mid_wheel_joint</right_joint>
+            <right_joint>right_rear_wheel_joint</right_joint>
+
+            <!-- Kinematics -->
+            <wheel_separation>0.7</wheel_separation>
+            <wheel_radius>0.12</wheel_radius>
+
+            <!-- Limits -->
+            <max_linear_acceleration>0.5</max_linear_acceleration>
+            <max_angular_acceleration>1.0</max_angular_acceleration>
+
+            <!-- Topics -->
+            <topic>cmd_vel</topic>
+            <odom_topic>odom</odom_topic>
+            <tf_topic>tf</tf_topic>
+            <frame_id>odom</frame_id>
+            <child_frame_id>base_footprint</child_frame_id>
+
+            <odom_publish_frequency>50</odom_publish_frequency>
+        </plugin>
+        <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+            <joint_name>left_front_wheel_joint</joint_name>
+            <joint_name>left_mid_wheel_joint</joint_name>
+            <joint_name>left_rear_wheel_joint</joint_name>
+            <joint_name>right_front_wheel_joint</joint_name>
+            <joint_name>right_mid_wheel_joint</joint_name>
+            <joint_name>right_rear_wheel_joint</joint_name>
+            <topic>joint_states</topic>
+        </plugin>
+    </gazebo>
+
+</robot>
