@@ -9,7 +9,7 @@ from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description import LaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 
 
@@ -28,10 +28,10 @@ def generate_launch_description():
         ]
     )
 
-    sim_world = DeclareLaunchArgument(
-        "sim_world",
-        default_value="empty.sdf",
-        description="Path to the Gazebo world file",
+    world_arg = DeclareLaunchArgument(
+        "world",
+        default_value="empty_world.sdf",
+        description="World file name (must be in worlds/ folder)",
     )
 
     robot_ns = DeclareLaunchArgument(
@@ -55,12 +55,21 @@ def generate_launch_description():
         description="Robot spawn Z",
     )
 
+    # Build world path from worlds folder + world name
+    world_path = PathJoinSubstitution([
+        pkg_tin3_bot,
+        "worlds",
+        LaunchConfiguration("world")
+    ])
+
     # Setup to launch the simulator and Gazebo world
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py")
         ),
-        launch_arguments={"gz_args": LaunchConfiguration("sim_world")}.items(),
+        launch_arguments={
+            "gz_args": ["-r ", world_path]
+        }.items(),
     )
 
     # Spawn robot
@@ -95,7 +104,7 @@ def generate_launch_description():
     return LaunchDescription(
         [
             gz_resource_path,
-            sim_world,
+            world_arg,
             robot_ns,
             robot_x,
             robot_y,
