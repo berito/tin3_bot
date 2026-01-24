@@ -51,7 +51,12 @@ def spawn_robot(
         parameters=[
             {"use_sim_time": True},
             {"robot_description": robot_desc},
+            {"frame_prefix": robot_ns + "/" if robot_ns else ""},
         ],
+        remappings=[
+        ("/tf", "/tf"),
+        ("/tf_static", "/tf_static"),
+             ]
     )
 
     # Spawn robot inside simulation

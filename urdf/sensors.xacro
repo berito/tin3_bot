@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="tin3_bot">
 
+    <!-- Add namespace properties at top of sensors.xacro -->
+    <xacro:arg name="robot_ns" default="" />
+    <xacro:property name="ns" value="$(arg robot_ns)" />
+    <xacro:property name="topic_prefix" value="${'/' + ns if ns != '' else ''}" />
+    <xacro:property name="frame_prefix" value="${ns + '/' if ns != '' else ''}" />
     <!-- ==================== -->
     <!-- GPS SENSOR           -->
     <!-- ==================== -->
@@ -24,8 +29,10 @@
         <sensor name="gps_sensor" type="navsat">
             <always_on>true</always_on>
             <update_rate>5</update_rate>
-            <topic>/gps/fix</topic>
-            <gz_frame_id>gps_link</gz_frame_id>
+            <!-- <topic>/gps/fix</topic> -->
+            <!-- <gz_frame_id>gps_link</gz_frame_id> -->
+            <topic>${topic_prefix}/gps/fix</topic>
+            <gz_frame_id>${frame_prefix}gps_link</gz_frame_id>
             <navsat>
                 <position_sensing>
                     <horizontal>
@@ -64,8 +71,10 @@
         <sensor name="imu_sensor" type="imu">
             <always_on>true</always_on>
             <update_rate>100</update_rate>
-            <topic>/imu/data</topic>
-            <gz_frame_id>imu_link</gz_frame_id>
+            <!-- <topic>/imu/data</topic> -->
+            <!-- <gz_frame_id>imu_link</gz_frame_id> -->
+             <topic>${topic_prefix}/imu/data</topic>
+            <gz_frame_id>${frame_prefix}imu_link</gz_frame_id>
             <imu>
                 <angular_velocity>
                     <x>
@@ -142,8 +151,10 @@
         <sensor name="lidar_sensor" type="gpu_lidar">
             <always_on>true</always_on>
             <update_rate>10</update_rate>
-            <topic>/scan</topic>
-            <gz_frame_id>lidar_link</gz_frame_id>
+            <!-- <topic>/scan</topic> -->
+            <!-- <gz_frame_id>lidar_link</gz_frame_id> -->
+            <topic>${topic_prefix}/scan</topic>
+            <gz_frame_id>${frame_prefix}lidar_link</gz_frame_id>
             <lidar>
                 <scan>
                     <horizontal>
@@ -180,8 +191,10 @@
         <sensor name="rgb_camera" type="camera">
             <always_on>true</always_on>
             <update_rate>30</update_rate>
-            <topic>/camera/image_raw</topic>
-            <gz_frame_id>gimbal_camera_link</gz_frame_id>
+            <!-- <topic>/camera/image_raw</topic> -->
+            <!-- <gz_frame_id>gimbal_camera_link</gz_frame_id> -->
+             <topic>${topic_prefix}/camera/image_raw</topic>
+            <gz_frame_id>${frame_prefix}gimbal_camera_link</gz_frame_id>
             <camera>
                 <horizontal_fov>1.047</horizontal_fov>
                 <image>
@@ -208,8 +221,10 @@
         <sensor name="ir_camera" type="camera">
             <always_on>true</always_on>
             <update_rate>30</update_rate>
-            <topic>/ir/image_raw</topic>
-            <gz_frame_id>gimbal_ir_camera_link</gz_frame_id>
+            <!-- <topic>/ir/image_raw</topic> -->
+            <!-- <gz_frame_id>gimbal_ir_camera_link</gz_frame_id> -->
+             <topic>${topic_prefix}/ir/image_raw</topic>
+            <gz_frame_id>${frame_prefix}gimbal_ir_camera_link</gz_frame_id>
             <camera>
                 <horizontal_fov>1.047</horizontal_fov>
                 <image>

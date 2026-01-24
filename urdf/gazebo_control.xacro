@@ -50,7 +50,7 @@
             <joint_name>right_rear_wheel_joint</joint_name>
             <joint_name>gimbal_pan_joint</joint_name>
             <joint_name>gimbal_tilt_joint</joint_name>
-            <topic>joint_states</topic>
+            <topic>${topic_prefix}/joint_states</topic>
             <update_rate>50</update_rate>
         </plugin>
     </gazebo>

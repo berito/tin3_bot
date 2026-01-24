@@ -151,4 +151,19 @@
     <child link="gimbal_ir_camera_link" />
     <origin xyz="0 0.03 ${tilt_z/2+0.025}" rpy="0 0 0" />
   </joint>
+  <!-- RGB Camera Optical Frame -->
+  <link name="gimbal_camera_optical_frame" />
+  <joint name="gimbal_camera_optical_joint" type="fixed">
+    <parent link="gimbal_camera_link" />
+    <child link="gimbal_camera_optical_frame" />
+    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}" />
+  </joint>
+
+  <!-- IR Camera Optical Frame -->
+  <link name="gimbal_ir_camera_optical_frame" />
+  <joint name="gimbal_ir_camera_optical_joint" type="fixed">
+    <parent link="gimbal_ir_camera_link" />
+    <child link="gimbal_ir_camera_optical_frame" />
+    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}" />
+  </joint>
 </robot>
