@@ -76,15 +76,27 @@ def spawn_robot(
     )
 
     # Bridge ROS topics and Gazebo messages
+    if robot_ns == "":
+        bridge_prefix = ""
+    else:
+        bridge_prefix = "/" + robot_ns
     topic_bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
         name=node_name_prefix + "parameter_bridge",
         arguments=[
-            robot_ns + "/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist",
-            robot_ns + "/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry",
-            robot_ns + "/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V",
-            robot_ns + "/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model",
+            bridge_prefix + "/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist",
+            bridge_prefix + "/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry",
+            bridge_prefix + "/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V",
+            bridge_prefix + "/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model",
+            bridge_prefix + "/gps/fix@gps_msgs/msg/GPSFix@gz.msgs.NavSat",
+            bridge_prefix + "/imu/data@sensor_msgs/msg/Imu[gz.msgs.IMU",
+            bridge_prefix + "/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan",
+            bridge_prefix + "/gimbal/pan_cmd@std_msgs/msg/Float64]gz.msgs.Double",
+            bridge_prefix + "/gimbal/tilt_cmd@std_msgs/msg/Float64]gz.msgs.Double",
+            bridge_prefix + "/camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image",
+            bridge_prefix + "/ir/image_raw@sensor_msgs/msg/Image[gz.msgs.Image"
+            
         ],
         parameters=[
             {

@@ -18,12 +18,12 @@
   </xacro:macro>
 
   <!-- Apply friction to all hidden wheels -->
-  <xacro:wheel_friction wheel_name="left_front_wheel"/>
-  <xacro:wheel_friction wheel_name="left_mid_wheel"/>
-  <xacro:wheel_friction wheel_name="left_rear_wheel"/>
-  <xacro:wheel_friction wheel_name="right_front_wheel"/>
-  <xacro:wheel_friction wheel_name="right_mid_wheel"/>
-  <xacro:wheel_friction wheel_name="right_rear_wheel"/>
+  <xacro:wheel_friction wheel_name="left_front_wheel" />
+  <xacro:wheel_friction wheel_name="left_mid_wheel" />
+  <xacro:wheel_friction wheel_name="left_rear_wheel" />
+  <xacro:wheel_friction wheel_name="right_front_wheel" />
+  <xacro:wheel_friction wheel_name="right_mid_wheel" />
+  <xacro:wheel_friction wheel_name="right_rear_wheel" />
 
   <!-- ==================== -->
   <!-- GAZEBO MATERIALS     -->
@@ -40,5 +40,11 @@
   <gazebo reference="right_track_visual">
     <material>Gazebo/Black</material>
   </gazebo>
+  <gazebo reference="gimbal_pan_link">
+    <self_collide>false</self_collide>
+  </gazebo>
 
+  <gazebo reference="gimbal_tilt_link">
+    <self_collide>false</self_collide>
+  </gazebo>
 </robot>
