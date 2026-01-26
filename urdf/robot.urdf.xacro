@@ -108,9 +108,9 @@
       <material name="dark_gray" />
     </visual>
     <!-- <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}" />
       </geometry>
     </collision> -->
     <inertial>
@@ -144,6 +144,12 @@
         <mesh filename="package://tin3_bot/meshes/left_track.dae" scale="${mesh_scale}" />
       </geometry>
       <material name="dark_gray" />
+      <!-- <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.8 0.15 0.24" />
+        </geometry>
+      </collision> -->
     </visual>
     <inertial>
       <mass value="0.01" />
@@ -165,6 +171,12 @@
         <mesh filename="package://tin3_bot/meshes/right_track.dae" scale="${mesh_scale}" />
       </geometry>
       <material name="dark_gray" />
+      <!-- <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.8 0.15 0.24" />
+        </geometry>
+      </collision> -->
     </visual>
     <inertial>
       <mass value="0.01" />

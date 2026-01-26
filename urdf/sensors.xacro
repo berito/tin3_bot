@@ -73,7 +73,7 @@
             <update_rate>100</update_rate>
             <!-- <topic>/imu/data</topic> -->
             <!-- <gz_frame_id>imu_link</gz_frame_id> -->
-             <topic>${topic_prefix}/imu/data</topic>
+            <topic>${topic_prefix}/imu/data</topic>
             <gz_frame_id>${frame_prefix}imu_link</gz_frame_id>
             <imu>
                 <angular_velocity>
@@ -151,34 +151,34 @@
         <sensor name="lidar_sensor" type="gpu_lidar">
             <always_on>true</always_on>
             <update_rate>10</update_rate>
-            <!-- <topic>/scan</topic> -->
-            <!-- <gz_frame_id>lidar_link</gz_frame_id> -->
             <topic>${topic_prefix}/scan</topic>
             <gz_frame_id>${frame_prefix}lidar_link</gz_frame_id>
             <lidar>
                 <scan>
                     <horizontal>
-                        <samples>180</samples>
+                        <!-- FOV: 120° / 0.625° = 192 samples -->
+                        <samples>192</samples>
                         <resolution>1</resolution>
-                        <min_angle>-1.5708</min_angle>
-                        <max_angle>1.5708</max_angle>
+                        <min_angle>-1.0472</min_angle>  <!-- -60° -->
+                        <max_angle>1.0472</max_angle>   <!-- +60° -->
                     </horizontal>
                     <vertical>
-                        <samples>1</samples>
+                        <!-- FOV: 90° with 144 lines (per spec) -->
+                        <samples>144</samples>
                         <resolution>1</resolution>
-                        <min_angle>0</min_angle>
-                        <max_angle>0</max_angle>
+                        <min_angle>-0.7854</min_angle>  <!-- -45° -->
+                        <max_angle>0.7854</max_angle>   <!-- +45° -->
                     </vertical>
                 </scan>
                 <range>
                     <min>0.1</min>
-                    <max>30.0</max>
+                    <max>30.0</max>      <!-- 30m @ 10% reflectivity -->
                     <resolution>0.01</resolution>
                 </range>
                 <noise>
                     <type>gaussian</type>
                     <mean>0.0</mean>
-                    <stddev>0.01</stddev>
+                    <stddev>0.05</stddev>  <!-- ±5cm accuracy -->
                 </noise>
             </lidar>
             <visualize>true</visualize>
@@ -193,7 +193,7 @@
             <update_rate>30</update_rate>
             <!-- <topic>/camera/image_raw</topic> -->
             <!-- <gz_frame_id>gimbal_camera_link</gz_frame_id> -->
-             <topic>${topic_prefix}/camera/image_raw</topic>
+            <topic>${topic_prefix}/camera/image_raw</topic>
             <gz_frame_id>${frame_prefix}gimbal_camera_link</gz_frame_id>
             <camera>
                 <horizontal_fov>1.047</horizontal_fov>
@@ -223,7 +223,7 @@
             <update_rate>30</update_rate>
             <!-- <topic>/ir/image_raw</topic> -->
             <!-- <gz_frame_id>gimbal_ir_camera_link</gz_frame_id> -->
-             <topic>${topic_prefix}/ir/image_raw</topic>
+            <topic>${topic_prefix}/ir/image_raw</topic>
             <gz_frame_id>${frame_prefix}gimbal_ir_camera_link</gz_frame_id>
             <camera>
                 <horizontal_fov>1.047</horizontal_fov>
