@@ -4,8 +4,6 @@
   <!-- ==================== -->
   <!-- GAZEBO FRICTION      -->
   <!-- ==================== -->
-
-  <!-- High friction for track wheels (critical for tracked robots) -->
   <xacro:macro name="wheel_friction" params="wheel_name">
     <gazebo reference="${wheel_name}">
       <mu1>1.5</mu1>
@@ -32,7 +30,6 @@
   <gazebo reference="base_link">
     <material>Gazebo/DarkGrey</material>
   </gazebo>
-
   <gazebo reference="left_track_visual">
     <material>Gazebo/Black</material>
   </gazebo>
@@ -40,11 +37,27 @@
   <gazebo reference="right_track_visual">
     <material>Gazebo/Black</material>
   </gazebo>
+
+  <gazebo reference="gimbal_base_link">
+    <material>Gazebo/DarkGrey</material>
+  </gazebo>
+  <gazebo reference="gimbal_pan_link">
+    <material>Gazebo/DarkGrey</material>
+  </gazebo>
+  <gazebo reference="gimbal_tilt_link">
+    <material>Gazebo/DarkGrey</material>
+    <self_collide>false</self_collide>
+  </gazebo>
   <gazebo reference="gimbal_pan_link">
     <self_collide>false</self_collide>
   </gazebo>
-
-  <gazebo reference="gimbal_tilt_link">
-    <self_collide>false</self_collide>
+  <gazebo reference="camera_holder_link">
+    <material>Gazebo/DarkGrey</material>
   </gazebo>
+  <gazebo reference="lidar_link">
+    <material>Gazebo/DarkGray</material>
+  </gazebo>
+  <gazebo reference="rifle_link">
+    <material>Gazebo/Black</material>
+  </gazebo>  
 </robot>
