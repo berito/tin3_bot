@@ -20,6 +20,7 @@ def spawn_robot(
     y_pos: LaunchConfiguration,
     z_pos: LaunchConfiguration,
     use_ekf: LaunchConfiguration,
+    lidar_mode: LaunchConfiguration,
 ):
     pkg_project_description = get_package_share_directory("tin3_bot")
     robot_ns = context.perform_substitution(namespace)
@@ -27,6 +28,7 @@ def spawn_robot(
     y_value = context.perform_substitution(y_pos)
     z_value = context.perform_substitution(z_pos)
     ekf_enabled = context.perform_substitution(use_ekf).lower() == "true"
+    lidar_mode_value = context.perform_substitution(lidar_mode)
 
     robot_desc = xacro.process(
         os.path.join(
@@ -34,7 +36,7 @@ def spawn_robot(
             "urdf",
             "robot.urdf.xacro",
         ),
-        mappings={"robot_ns": robot_ns},
+        mappings={"robot_ns": robot_ns,"lidar_mode": lidar_mode_value, },
     )
 
     if robot_ns == "":
@@ -82,37 +84,48 @@ def spawn_robot(
             z_value,
         ],
     )
-
-    # Bridge ROS topics and Gazebo messages
     if robot_ns == "":
-        bridge_prefix = ""
+        topic_bridge = Node(
+            package="ros_gz_bridge",
+            executable="parameter_bridge",
+            name="parameter_bridge",
+            parameters=[
+                {"config_file": os.path.join(pkg_project_description, "config", "ros_gz_bridge.yaml")},
+                {"qos_overrides./tf_static.publisher.durability": "transient_local"},
+            ],
+            output="screen",
+        )
     else:
+        # Multi-robot - use arguments with namespace
         bridge_prefix = "/" + robot_ns
-    topic_bridge = Node(
-        package="ros_gz_bridge",
-        executable="parameter_bridge",
-        name=node_name_prefix + "parameter_bridge",
-        arguments=[
-            bridge_prefix + "/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist",
-            bridge_prefix + "/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry",
-            bridge_prefix + "/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V",
-            bridge_prefix + "/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model",
-            bridge_prefix + "/gps/fix@gps_msgs/msg/GPSFix@gz.msgs.NavSat",
-            bridge_prefix + "/imu/data@sensor_msgs/msg/Imu[gz.msgs.IMU",
-            bridge_prefix + "/scan/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked",
-            bridge_prefix + "/gimbal/pan_cmd@std_msgs/msg/Float64]gz.msgs.Double",
-            bridge_prefix + "/gimbal/tilt_cmd@std_msgs/msg/Float64]gz.msgs.Double",
-            bridge_prefix + "/camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image",
-            bridge_prefix + "/ir/image_raw@sensor_msgs/msg/Image[gz.msgs.Image"
-            
-        ],
-        parameters=[
-            {
-                "qos_overrides./tf_static.publisher.durability": "transient_local",
-            }
-        ],
-        output="screen",
-    )
+        topic_bridge = Node(
+            package="ros_gz_bridge",
+            executable="parameter_bridge",
+            name=node_name_prefix + "parameter_bridge",
+            arguments=[
+                # Commands (ROS → Gazebo)
+                bridge_prefix + "/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist",
+                bridge_prefix + "/gimbal/pan_cmd@std_msgs/msg/Float64]gz.msgs.Double",
+                bridge_prefix + "/gimbal/tilt_cmd@std_msgs/msg/Float64]gz.msgs.Double",
+                # Sensor data (Gazebo → ROS)
+                bridge_prefix + "/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry",
+                bridge_prefix + "/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V",
+                bridge_prefix + "/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model",
+                bridge_prefix + "/gps/fix@gps_msgs/msg/GPSFix[gz.msgs.NavSat",
+                bridge_prefix + "/imu/data@sensor_msgs/msg/Imu[gz.msgs.IMU",
+                bridge_prefix + "/scan/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked",
+                bridge_prefix + "/camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image",
+                bridge_prefix + "/ir/image_raw@sensor_msgs/msg/Image[gz.msgs.Image",
+                
+            ],
+            remappings=[
+                (bridge_prefix + "/tf", "/tf"),  
+            ],
+            parameters=[
+                {"qos_overrides./tf_static.publisher.durability": "transient_local"},
+            ],
+            output="screen",
+        )
     
     # Base nodes (always launched)
     nodes = [
@@ -166,11 +179,18 @@ def generate_launch_description():
         default_value="false",
         description="Enable EKF sensor fusion (robot_localization)",
     )
+    lidar_mode_argument = DeclareLaunchArgument(
+        "lidar_mode",
+        default_value="full",
+        description="LiDAR resolution: full, half, low",
+)
     namespace = LaunchConfiguration("robot_ns")
     x_pos = LaunchConfiguration("x")
     y_pos = LaunchConfiguration("y")
     z_pos = LaunchConfiguration("z")
     use_ekf = LaunchConfiguration("use_ekf")
+    lidar_mode = LaunchConfiguration("lidar_mode")
+ 
 
     return LaunchDescription(
         [
@@ -179,8 +199,9 @@ def generate_launch_description():
             y_argument,
             z_argument,
             ekf_argument,
+            lidar_mode_argument,
             OpaqueFunction(
-                function=spawn_robot, args=[namespace, x_pos, y_pos, z_pos,use_ekf]
+                function=spawn_robot, args=[namespace, x_pos, y_pos, z_pos,use_ekf,lidar_mode]
             ),
         ]
     )

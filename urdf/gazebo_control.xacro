@@ -4,13 +4,11 @@
     <!-- Namespace argument -->
     <xacro:arg name="robot_ns" default="" />
     <xacro:property name="ns" value="$(arg robot_ns)" />
-    <!-- Topic prefix: /ns or empty for topics -->
     <xacro:property name="topic_prefix" value="${'/' + ns if ns != '' else ''}" />
-    <!-- Frame prefix: ns/ or empty for frame_ids (no leading slash) -->
     <xacro:property name="frame_prefix" value="${ns + '/' if ns != '' else ''}" />
-    <!-- ==================== -->
+
+   
     <!-- DIFFERENTIAL DRIVE   -->
-    <!-- ==================== -->
     <gazebo>
         <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
             <!-- Left side wheels -->
@@ -54,9 +52,10 @@
             <update_rate>50</update_rate>
         </plugin>
     </gazebo>
-    <!-- ==================== -->
+
+    
+    
     <!-- GIMBAL CONTROLLERS   -->
-    <!-- ==================== -->
 
     <!-- Gimbal Pan Controller -->
     <gazebo>
@@ -64,9 +63,6 @@
             name="gz::sim::systems::JointPositionController">
             <joint_name>gimbal_pan_joint</joint_name>
             <topic>${topic_prefix}/gimbal/pan_cmd</topic>
-            <!-- <p_gain>10</p_gain>
-            <i_gain>0.1</i_gain>
-            <d_gain>0.5</d_gain> -->
             <p_gain>5</p_gain>
             <i_gain>0.0</i_gain>
             <d_gain>1.0</d_gain>
@@ -79,9 +75,6 @@
             name="gz::sim::systems::JointPositionController">
             <joint_name>gimbal_tilt_joint</joint_name>
             <topic>${topic_prefix}/gimbal/tilt_cmd</topic>
-            <!-- <p_gain>10</p_gain>
-            <i_gain>0.1</i_gain>
-            <d_gain>0.5</d_gain> -->
             <p_gain>5</p_gain>
             <i_gain>0.0</i_gain>
             <d_gain>1.0</d_gain>

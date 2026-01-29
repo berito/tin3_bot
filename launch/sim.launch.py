@@ -1,13 +1,3 @@
-# Simulation launch file for tin3_bot
-# Starts Gazebo, clock bridge, and spawns N robots
-#
-# Usage:
-#   Single robot:   ros2 launch tin3_bot sim.launch.py
-#   Multi robot:    ros2 launch tin3_bot sim.launch.py num_robots:=4
-#   With EKF:       ros2 launch tin3_bot sim.launch.py use_ekf:=true
-#   Custom world:   ros2 launch tin3_bot sim.launch.py world:=test_world.sdf
-#   Combined:       ros2 launch tin3_bot sim.launch.py num_robots:=4 use_ekf:=true world:=test_world.sdf
-
 import os
 
 from ament_index_python.packages import get_package_share_directory
@@ -30,12 +20,14 @@ def spawn_robots(
     context: LaunchContext,
     num_robots: LaunchConfiguration,
     use_ekf: LaunchConfiguration,
+    lidar_mode: LaunchConfiguration
 ):
     """Dynamically spawn N robots in a grid layout"""
 
     pkg_tin3_bot = get_package_share_directory("tin3_bot")
     num = int(context.perform_substitution(num_robots))
     ekf_flag = context.perform_substitution(use_ekf)
+    lidar_flag = context.perform_substitution(lidar_mode)
 
     spawn_actions = []
 
@@ -70,6 +62,7 @@ def spawn_robots(
                         "y": str(y),
                         "z": "0.5",
                         "use_ekf": ekf_flag,
+                        "lidar_mode": lidar_flag,
                     }.items(),
                 )
             ],
@@ -97,7 +90,7 @@ def generate_launch_description():
     # ==================== Arguments ====================
     world_arg = DeclareLaunchArgument(
         "world",
-        default_value="empty.sdf",
+        default_value="empty_world.sdf",
         description="World file name (in worlds/ folder)",
     )
 
@@ -112,14 +105,25 @@ def generate_launch_description():
         default_value="false",
         description="Enable EKF sensor fusion for all robots",
     )
-
+    lidar_mode_arg = DeclareLaunchArgument(
+        "lidar_mode",
+        default_value="full",
+        description="LiDAR resolution: full, half, low",
+    )
     # ==================== Gazebo ====================
     gz_sim = IncludeLaunchDescription(
     PythonLaunchDescriptionSource(
         os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py")
     ),
     launch_arguments={
-        "gz_args": LaunchConfiguration("world"),
+        "gz_args": [
+            PathJoinSubstitution([
+                pkg_tin3_bot,
+                "worlds",
+                LaunchConfiguration("world")
+            ]),
+            " -r"  # Auto-run simulation
+        ],
     }.items(),
 )
     # ==================== Clock Bridge ====================
@@ -139,21 +143,19 @@ def generate_launch_description():
         args=[
             LaunchConfiguration("num_robots"),
             LaunchConfiguration("use_ekf"),
+            LaunchConfiguration("lidar_mode"),
         ],
     )
 
     return LaunchDescription(
         [
-            # Environment
             gz_resource_path,
-            # Arguments
             world_arg,
             num_robots_arg,
             use_ekf_arg,
-            # Gazebo + Clock
+            lidar_mode_arg, 
             gz_sim,
             clock_bridge,
-            # Robots
             spawn_robots_action,
         ]
     )
