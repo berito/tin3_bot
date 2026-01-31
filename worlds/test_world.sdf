@@ -1,0 +1,83 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <world name="test_world">
+
+    <!-- Physics -->
+    <physics type="ode">
+      <real_time_update_rate>1000</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+    </physics>
+
+    <!-- Plugins -->
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/>
+    <plugin filename="gz-sim-navsat-system" name="gz::sim::systems::NavSat"/>
+
+    <!-- Lighting -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 100 0 0 0</pose>
+      <diffuse>1 1 1 1</diffuse>
+      <specular>0.5 0.5 0.5 1</specular>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- Terrain -->
+    <model name="terrain">
+      <static>true</static>
+      <pose>0 0 0 0 0 0</pose>
+      <link name="terrain_link">
+        <visual name="terrain_visual">
+          <geometry>
+            <mesh>
+              <uri>file:///home/ai_lab/ros2_ws/src/tin3_bot/meshes/world/terrain.stl</uri>
+            </mesh>
+          </geometry>
+          <material>
+            <ambient>0.5 0.5 0.5 1</ambient>
+            <diffuse>0.7 0.7 0.7 1</diffuse>
+          </material>
+        </visual>
+        <collision name="terrain_collision">
+          <geometry>
+            <mesh>
+              <uri>file:///home/ai_lab/ros2_ws/src/tin3_bot/meshes/world/terrain.stl</uri>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <!-- Objects (poles, signs, powerlines) -->
+    <model name="objects">
+      <static>true</static>
+      <pose>0 0 0 0 0 0</pose>
+      <link name="objects_link">
+        <visual name="objects_visual">
+          <geometry>
+            <mesh>
+              <uri>file:///home/ai_lab/ros2_ws/src/tin3_bot/meshes/world/objects.stl</uri>
+            </mesh>
+          </geometry>
+          <material>
+            <ambient>0.3 0.3 0.3 1</ambient>
+            <diffuse>0.5 0.5 0.5 1</diffuse>
+          </material>
+        </visual>
+        <collision name="objects_collision">
+          <geometry>
+            <mesh>
+              <uri>file:///home/ai_lab/ros2_ws/src/tin3_bot/meshes/world/objects.stl</uri>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+  </world>
+</sdf>

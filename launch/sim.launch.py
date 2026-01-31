@@ -76,6 +76,7 @@ def generate_launch_description():
     # Package paths
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
     pkg_tin3_bot = get_package_share_directory("tin3_bot")
+    pkg_tin3_bot_worlds = get_package_share_directory("leo_gz_worlds")
 
     # ==================== Environment ====================
     gz_resource_path = SetEnvironmentVariable(
@@ -90,7 +91,7 @@ def generate_launch_description():
     # ==================== Arguments ====================
     world_arg = DeclareLaunchArgument(
         "world",
-        default_value="empty_world.sdf",
+        default_value=os.path.join(pkg_tin3_bot_worlds, "worlds", "leo_empty.sdf"),
         description="World file name (in worlds/ folder)",
     )
 
@@ -115,16 +116,17 @@ def generate_launch_description():
     PythonLaunchDescriptionSource(
         os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py")
     ),
-    launch_arguments={
-        "gz_args": [
-            PathJoinSubstitution([
-                pkg_tin3_bot,
-                "worlds",
-                LaunchConfiguration("world")
-            ]),
-            " -r"  # Auto-run simulation
-        ],
-    }.items(),
+    # launch_arguments={
+    #     "gz_args": [
+    #         PathJoinSubstitution([
+    #             pkg_tin3_bot,
+    #             "worlds",
+    #             LaunchConfiguration("world")
+    #         ]),
+    #         " -r"  # Auto-run simulation
+    #     ],
+    # }.items(),
+     launch_arguments={"gz_args": LaunchConfiguration("world")}.items(),
 )
     # ==================== Clock Bridge ====================
     clock_bridge = Node(
