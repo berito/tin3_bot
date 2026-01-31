@@ -26,3 +26,4 @@ __pycache__/
 # Large mesh files 
 # *.stl
 # *.dae
+meshes/world/*.stl

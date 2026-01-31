@@ -5,7 +5,7 @@
   <version>1.0.0</version>
   <description>Multi-robot URDF/SDF system for track-based swarm robots</description>
   <maintainer email="mohammedsrajk@gmail.com">Mohammed</maintainer>
-  <license></license>
+  <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
