@@ -113,8 +113,8 @@ def spawn_robot(
                 bridge_prefix + "/gps/fix@gps_msgs/msg/GPSFix[gz.msgs.NavSat",
                 bridge_prefix + "/imu/data@sensor_msgs/msg/Imu[gz.msgs.IMU",
                 bridge_prefix + "/scan/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked",
-                bridge_prefix + "/camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image",
-                bridge_prefix + "/ir/image_raw@sensor_msgs/msg/Image[gz.msgs.Image",
+                bridge_prefix + "/rgb_camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image",
+                bridge_prefix + "/ir_camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image",
             ],
             remappings=[
                 (bridge_prefix + "/tf", "/tf"),
