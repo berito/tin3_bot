@@ -2,6 +2,8 @@
 
 Navigation and localization configs for TIN3 robot.
 
+---
+
 ## Folder Structure
 
 ```
@@ -16,6 +18,8 @@ tin3_navigation/
     └── navigation.rviz      # Nav2 visualization
 ```
 
+---
+
 ## Usage
 
 ```bash
@@ -24,18 +28,46 @@ ros2 launch tin3_navigation ekf.launch.py
 
 # Full navigation stack
 ros2 launch tin3_navigation nav2.launch.py
-
-# With namespace (multi-robot)
-ros2 launch tin3_navigation ekf.launch.py robot_ns:=robot_01
 ```
+
+---
+
+## EKF Configuration
+
+| Parameter | Value |
+|-----------|-------|
+| Frequency | 30 Hz |
+| Output topic | `/odom_filtered` |
+| TF published | `odom → base_footprint` |
+
+**Sensor fusion inputs:**
+
+| Source | Topic | Fused States |
+|--------|-------|--------------|
+| Wheel odometry | `/odom` | x, y, vx, vyaw |
+| IMU | `/imu/data` | roll_vel, pitch_vel, yaw_vel |
+
+---
 
 ## Dependencies
 
-- `tin3_description` - Robot URDF
-- `robot_localization` - EKF sensor fusion
-- `nav2_bringup` - Navigation stack
+- `tin3_description` — robot URDF
+- `robot_localization` — EKF sensor fusion
+- `nav2_bringup` — navigation stack
+- `pointcloud_to_laserscan` — LiDAR point cloud conversion
+
+```bash
+# Install dependencies
+rosdep install --from-paths src --ignore-src -r -y
+
+# Or manually:
+sudo apt install ros-${ROS_DISTRO}-pointcloud-to-laserscan
+sudo apt install ros-${ROS_DISTRO}-nav2-bringup ros-${ROS_DISTRO}-nav2-smac-planner
+```
+
+---
 
 ## Notes
 
-- Works with both simulation and real robot
-- Same configs used in sim and real (use_sim_time param differs)
+- `use_sim_time: true` is set in `ekf.yaml` for simulation
+- Works with both simulation and real robot — set `use_sim_time` accordingly
