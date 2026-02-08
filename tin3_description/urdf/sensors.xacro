@@ -51,7 +51,10 @@
     <xacro:property name="lidar_x" value="0.063" />
     <xacro:property name="lidar_y" value="0.175" />
     <xacro:property name="lidar_z" value="0.118" />
-
+    <!-- LiDAR mount height above base_link (spec: 0.50m above ground) -->
+    <xacro:property name="lidar_z_offset" value="0.113" />
+    <!-- LiDAR tilt to meet 0.25m ground scan requirement -->
+    <xacro:property name="lidar_pitch" value="-0.272" />  <!-- -15.6° forward tilt in radians -->
 
     <!-- GPS LINK -->
     <link name="gps_link">
@@ -98,7 +101,8 @@
         <joint name="lidar_joint" type="fixed">
             <parent link="base_link" />
             <child link="lidar_link" />
-            <origin xyz="0.626 -0.01 -0.06" rpy="0 0 0" />
+            <!-- <origin xyz="0.626 -0.01 -0.06" rpy="0 0 0" /> before -->
+            <origin xyz="0.626 -0.01 ${lidar_z_offset}" rpy="0 ${lidar_pitch} 0" />
         </joint>
     </xacro:if>
     <!-- GPS SENSOR -->

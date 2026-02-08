@@ -1,6 +1,4 @@
 # ROS-Gazebo Bridge Configuration
-# Direction: GZ_TO_ROS = [, ROS_TO_GZ = ], BIDIRECTIONAL = @
-
 # Control
 - ros_topic_name: "cmd_vel"
   gz_topic_name: "cmd_vel"
@@ -65,15 +63,15 @@
   direction: ROS_TO_GZ
 
 # RGB Camera
-- ros_topic_name: "camera/image_raw"
-  gz_topic_name: "camera/image_raw"
+- ros_topic_name: "rgb_camera/image_raw"
+  gz_topic_name: "rgb_camera/image_raw"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
   direction: GZ_TO_ROS
 
 # IR Camera
-- ros_topic_name: "ir/image_raw"
-  gz_topic_name: "ir/image_raw"
+- ros_topic_name: "ir_camera/image_raw"
+  gz_topic_name: "ir_camera/image_raw"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
   direction: GZ_TO_ROS

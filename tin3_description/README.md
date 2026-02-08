@@ -41,7 +41,7 @@ tin3_description/
 
 ```bash
 # Build
-cd ~/ros2_ws
+cd <your_workspace>
 colcon build --packages-select tin3_description
 source install/setup.bash
 
@@ -79,10 +79,12 @@ base_footprint
         └── gimbal_pan_link
             └── gimbal_tilt_link
                 ├── camera_holder_link
-                │   ├── rgb_camera_link
-                │   └── ir_camera_link
+                │   ├── rgb_camera_link → rgb_camera_optical_frame
+                │   └── ir_camera_link → ir_camera_optical_frame
                 └── rifle_link
 ```
+
+**Note:** At runtime, the full TF tree has `odom` as root (published by EKF or sim): `odom → base_footprint → base_link → ...`
 
 ---
 

@@ -31,6 +31,7 @@ def spawn_robots(
     pose_config: LaunchConfiguration,
     pattern_config: LaunchConfiguration,
     spacing_config: LaunchConfiguration,
+    use_sim_time_config: LaunchConfiguration
 ):
     """Dynamically spawn N robots with different patterns"""
 
@@ -98,6 +99,7 @@ def spawn_robots(
                         "robot_ns": robot_ns,
                         "pose": robot_pose,
                         "lidar_mode": lidar_mode,
+                        "use_sim_time": use_sim_time_config,
                     }.items(),
                 )
             ],
@@ -121,6 +123,12 @@ def generate_launch_description():
     )
 
     # ==================== Arguments ====================
+    use_sim_time_arg = DeclareLaunchArgument(
+                "use_sim_time",
+                default_value="true",
+                description="Use simulation (Gazebo) clock if true"
+            )
+   
     world_arg = DeclareLaunchArgument(
         "world",
         default_value=os.path.join(pkg_tin3_gz_worlds, "worlds", "empty_world.sdf"),
@@ -173,6 +181,7 @@ def generate_launch_description():
         arguments=[
             "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
         ],
+        parameters=[{"use_sim_time": True}],
         output="screen",
     )
 
@@ -185,12 +194,14 @@ def generate_launch_description():
             LaunchConfiguration("pose"),
             LaunchConfiguration("pattern"),
             LaunchConfiguration("spacing"),
+            LaunchConfiguration("use_sim_time"),
         ],
     )
 
     return LaunchDescription(
         [
             gz_resource_path,
+            use_sim_time_arg, 
             world_arg,
             num_robots_arg,
             lidar_mode_arg,

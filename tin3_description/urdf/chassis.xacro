@@ -15,6 +15,9 @@
   <xacro:property name="track_height" value="0.334" />
   <xacro:property name="track_mass" value="0.01" />
 
+  <!-- Track collision (upper portion only - clears hidden wheels) -->
+  <xacro:property name="track_collision_height" value="0.297" />
+  <xacro:property name="track_collision_z_offset" value="0.019" />
 
   <!-- Track offsets from base_link center (meters) -->
   <xacro:property name="track_y_offset" value="0.35" />
@@ -86,11 +89,12 @@
       </geometry>
       <material name="dark_gray" />
     </visual>
-    <!-- <collision>
+    <collision>
+      <origin xyz="0 0 ${track_collision_z_offset}" rpy="0 0 0" />
       <geometry>
-        <box size="${track_length} ${track_width} ${track_height}" />
+        <box size="${track_length} ${track_width} ${track_collision_height}" />
       </geometry>
-    </collision> -->
+    </collision>
     <inertial>
       <mass value="${track_mass}" />
       <xacro:box_inertia m="${track_mass}" x="${track_length}" y="${track_width}"
@@ -114,11 +118,12 @@
       <material name="dark_gray" />
 
     </visual>
-    <!-- <collision>
+    <collision>
+      <origin xyz="0 0 ${track_collision_z_offset}" rpy="0 0 0" />
       <geometry>
-        <box size="${track_length} ${track_width} ${track_height}" />
+        <box size="${track_length} ${track_width} ${track_collision_height}" />
       </geometry>
-    </collision> -->
+    </collision>
     <inertial>
       <mass value="${track_mass}" />
       <xacro:box_inertia m="${track_mass}" x="${track_length}" y="${track_width}"

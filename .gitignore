@@ -28,3 +28,5 @@ tin3_gz_worlds/models/marsyard2020_terrain/
 tin3_gz_worlds/models/orchard_world/
 # *.stl
 # *.dae
+tin3_gz_simulation/scripts/
+tin3_navigation/scripts/

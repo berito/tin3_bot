@@ -40,7 +40,7 @@ RUN apt-get update && apt-get install -y \
     ros-humble-ros-gz-image \
     && rm -rf /var/lib/apt/lists/*
 
-# Install robot dependencies (common packages)
+# Install robot dependencies
 RUN apt-get update && apt-get install -y \
     ros-humble-robot-state-publisher \
     ros-humble-joint-state-publisher \
@@ -49,6 +49,8 @@ RUN apt-get update && apt-get install -y \
     ros-humble-robot-localization \
     ros-humble-navigation2 \
     ros-humble-nav2-bringup \
+    ros-humble-nav2-smac-planner \
+    ros-humble-pointcloud-to-laserscan \
     ros-humble-slam-toolbox \
     ros-humble-tf2-ros \
     ros-humble-tf2-tools \
@@ -58,7 +60,7 @@ RUN apt-get update && apt-get install -y \
     ros-humble-gps-msgs \
     && rm -rf /var/lib/apt/lists/*
 
-# Create workspace directory (generic path)
+# Create workspace directory
 RUN mkdir -p /ros2_ws/src
 
 # Set up ROS environment
