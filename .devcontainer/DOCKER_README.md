@@ -1,69 +1,73 @@
-# Docker Setup for tin3_bot (ROS 2 Humble Testing)
+# Docker Setup — ROS 2 Humble + Gazebo Harmonic
 
-Test tin3_bot in ROS 2 Humble environment. Works on any machine 
-## Folder Structure
+Test and run tin3_bot packages in a ROS 2 Humble container with Gazebo Harmonic.
+
+---
+
+## Prerequisites
+
+- Docker installed
+- VS Code with [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension
+- X11 display (for Gazebo/RViz GUI)
+
+```bash
+# Allow X11 forwarding (run on host)
+xhost +local:docker
+```
+
+---
+
+## Quick Start (VS Code Dev Container)
+
+1. Place `.devcontainer/` folder at the workspace root alongside the packages:
 
 ```
-tin3_bot/                    
+<your_workspace>/
 ├── .devcontainer/
-│   ├── Dockerfile           
-│   ├── devcontainer.json 
-├── urdf/
-├── launch/
-├── config/
-├── meshes/
-├── worlds/
-└── package.xml
+│   ├── Dockerfile
+│   └── devcontainer.json
+├── tin3_description/
+├── tin3_gz_simulation/
+├── tin3_gz_worlds/
+└── tin3_navigation/
 ```
 
-## Quick Start
-
-### Method 1: VS Code Dev Container (Recommended)
-
-1. **Open in VS Code:**
+2. Open workspace in VS Code:
    ```bash
-   code tin3_bot/
+   code <your_workspace>/
    ```
-23. **Reopen in Container:**
-   - Press `Ctrl+Shift+P`
-   - Select "Dev Containers: Reopen in Container"
-   - Wait for build (~5-10 min first time)
 
-3. **Test:**
+3. Reopen in Container:
+   - `Ctrl+Shift+P` → "Dev Containers: Reopen in Container"
+   - First build takes ~5-10 min
+
+4. Test (terminal opens inside container at `/ros2_ws`):
    ```bash
-   # Already in /ros2_ws, already built
    source install/setup.bash
-   ros2 launch tin3_bot sim.launch.py
+   ros2 launch tin3_gz_simulation sim.launch.py
    ```
+
+---
 
 ## Environment
 
 | Component | Version |
 |-----------|---------|
+| Ubuntu | 22.04 |
 | ROS 2 | Humble |
 | Gazebo | Harmonic |
-| Ubuntu | 22.04 |
 
-## Installed Packages
+---
 
-- ros-humble-ros-gz (bridge)
-- ros-humble-robot-localization
-- ros-humble-navigation2
-- ros-humble-slam-toolbox
-- ros-humble-xacro
-- ros-humble-gps-msgs
-- ros-humble-rviz2
-- ros-humble-plotjuggler-ros
+## What Gets Installed
 
-## Testing Commands
+The Dockerfile installs all dependencies. The `postCreateCommand` in `devcontainer.json` then runs `rosdep install` and `colcon build` automatically on first open.
 
-```bash
-# Single robot
-ros2 launch tin3_bot sim.launch.py
+---
 
-# Multi-robot with low LiDAR
-ros2 launch tin3_bot sim.launch.py num_robots:=4 lidar_mode:=low
+## Notes
 
-# With EKF
-ros2 launch tin3_bot sim.launch.py use_ekf:=true
-```
+- GUI uses X11 forwarding — no VNC or web desktop needed
+- `--privileged` and `--network=host` are set for GPU access and ROS 2 DDS discovery
+- `use_sim_time: true` is already configured in the navigation configs
+- See the global README for launch arguments, sensor topics, and multi-robot usage

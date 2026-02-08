@@ -34,14 +34,7 @@ def generate_launch_description():
     nav2_params = LaunchConfiguration("params_file")
     use_rviz = LaunchConfiguration("use_rviz")
     
-    bt_nav_to_pose = os.path.join(
-        pkg_tin3_navigation, "config",
-        "navigate_to_pose_w_replanning_and_recovery.xml"
-    )
-    bt_nav_through_poses = os.path.join(
-        pkg_tin3_navigation, "config",
-        "navigate_through_poses_w_replanning_and_recovery.xml"
-    )
+ 
     declare_map = DeclareLaunchArgument(
         "map",
         default_value=os.path.join(
@@ -156,11 +149,18 @@ def generate_launch_description():
         executable="bt_navigator",
         name="bt_navigator",
         output="screen",
-        parameters=[nav2_params,
-            {
-                "default_nav_to_pose_bt_xml": bt_nav_to_pose,
-                "default_nav_through_poses_bt_xml": bt_nav_through_poses,
-            },],
+        parameters=[nav2_params,{
+            "default_nav_to_pose_bt_xml": os.path.join(
+                get_package_share_directory("nav2_bt_navigator"),
+                "behavior_trees",
+                "navigate_to_pose_w_replanning_and_recovery.xml"
+            ),
+            "default_nav_through_poses_bt_xml": os.path.join(
+                get_package_share_directory("nav2_bt_navigator"),
+                "behavior_trees",
+                "navigate_through_poses_w_replanning_and_recovery.xml"
+            ),
+        },],
     )
 
     waypoint_follower = Node(

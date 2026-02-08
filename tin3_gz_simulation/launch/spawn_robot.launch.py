@@ -18,11 +18,12 @@ def spawn_robot(
     namespace: LaunchConfiguration,
     pose: LaunchConfiguration,
     lidar_mode: LaunchConfiguration,
+    use_sim_time: LaunchConfiguration,
 ):
     robot_ns = context.perform_substitution(namespace)
     pose_str = context.perform_substitution(pose)
     lidar_mode_value = context.perform_substitution(lidar_mode)
-
+    use_sim_time_value = context.perform_substitution(use_sim_time).lower() == 'true'
     # Parse "x y z" string
     pose_parts = pose_str.split()
     x_value = pose_parts[0] if len(pose_parts) > 0 else "0.0"
@@ -52,7 +53,7 @@ def spawn_robot(
         name="robot_state_publisher",
         output="both",
         parameters=[
-            {"use_sim_time": True},
+            {"use_sim_time": use_sim_time_value},
             {"robot_description": robot_desc},
             {"frame_prefix": robot_ns + "/" if robot_ns else ""},
         ],
@@ -90,6 +91,7 @@ def spawn_robot(
             name="parameter_bridge",
             parameters=[
                 {"config_file": os.path.join(pkg_tin3_gz_simulation, "config", "ros_gz_bridge.yaml")},
+                {"use_sim_time": use_sim_time_value},
                 {"qos_overrides./tf_static.publisher.durability": "transient_local"},
             ],
             output="screen",
@@ -120,6 +122,8 @@ def spawn_robot(
                 (bridge_prefix + "/tf", "/tf"),
             ],
             parameters=[
+                {"use_sim_time": use_sim_time_value},
+                {"qos_overrides./tf.publisher.reliability": "best_effort"},
                 {"qos_overrides./tf_static.publisher.durability": "transient_local"},
             ],
             output="screen",
@@ -133,12 +137,14 @@ def generate_launch_description():
         DeclareLaunchArgument("robot_ns", default_value="", description="Robot namespace"),
         DeclareLaunchArgument("pose", default_value="0 0 0.5", description="Spawn pose 'x y z' or 'x y z R P Y'"),
         DeclareLaunchArgument("lidar_mode", default_value="full", description="LiDAR: full, half, low"),
+        DeclareLaunchArgument("use_sim_time", default_value="true"),
         OpaqueFunction(
             function=spawn_robot,
             args=[
                 LaunchConfiguration("robot_ns"),
                 LaunchConfiguration("pose"),
                 LaunchConfiguration("lidar_mode"),
+                LaunchConfiguration("use_sim_time"),
             ],
         ),
     ])
